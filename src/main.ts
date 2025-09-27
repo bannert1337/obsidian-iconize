@@ -290,6 +290,15 @@ export default class IconizePlugin extends Plugin {
       this.app.vault.on('delete', (file) => {
         const path = file.path;
         this.removeFolderIcon(path);
+        
+        // Remove icon from frontmatter if the setting is enabled
+        if (this.getSettings().iconInFrontmatterEnabled) {
+          const iconFieldName = this.getSettings().iconInFrontmatterFieldName;
+          this.app.fileManager.processFrontMatter(file, (frontmatter) => {
+            delete frontmatter[iconFieldName];
+            return frontmatter;
+          });
+        }
       }),
     );
 
@@ -347,6 +356,15 @@ export default class IconizePlugin extends Plugin {
     dom.removeIconInPath(file.path);
     IconCache.getInstance().invalidate(file.path);
     this.notifyPlugins();
+    
+    // Remove icon from frontmatter if the setting is enabled
+    if (this.getSettings().iconInFrontmatterEnabled) {
+      const iconFieldName = this.getSettings().iconInFrontmatterFieldName;
+      this.app.fileManager.processFrontMatter(file, (frontmatter) => {
+        delete frontmatter[iconFieldName];
+        return frontmatter;
+      });
+    }
 
     let didUpdate = false;
 

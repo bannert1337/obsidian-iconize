@@ -133,6 +133,18 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
       saveIconToIconPack(this.plugin, iconNameWithPrefix);
     }
     this.plugin.notifyPlugins();
+    
+    // Update frontmatter if the setting is enabled
+    if (this.plugin.getSettings().iconInFrontmatterEnabled) {
+      const file = this.plugin.app.vault.getAbstractFileByPath(this.path);
+      if (file instanceof TFile) {
+        const iconFieldName = this.plugin.getSettings().iconInFrontmatterFieldName;
+        this.plugin.app.fileManager.processFrontMatter(file, (frontmatter) => {
+          frontmatter[iconFieldName] = iconNameWithPrefix;
+          return frontmatter;
+        });
+      }
+    }
   }
 
   renderSuggestion(item: FuzzyMatch<Icon>, el: HTMLElement): void {
